@@ -6,6 +6,7 @@ import (
     "log"
     "fmt"
     "time"
+    "sync"
     "github.com/hajimehoshi/ebiten"
     "github.com/hajimehoshi/ebiten/ebitenutil"
     "github.com/hajimehoshi/ebiten/inpututil"
@@ -22,10 +23,16 @@ var(
     positiony float64 = 164.0
 )
 
+//variables used to make the jump mutual exclusive
+var mux sync.Mutex
+var jump_count = 0
+
 //opts is a global variable because it would not update correctly inside the "update" func
 var opts *ebiten.DrawImageOptions = &ebiten.DrawImageOptions{}
 
 func jump(){
+    mux.Lock()
+    jump_count = 1
     for t:=time.Now(); time.Since(t)<(time.Second); {
         if(positiony>140){
             positiony -= 0.0001
@@ -34,11 +41,12 @@ func jump(){
     }
     for t:=time.Now(); time.Since(t)<(time.Second); {
         if(positiony<164){
-            positiony += 0.1
-            opts.GeoM.Translate(0, 0.1)
+            positiony += 0.0001
+            opts.GeoM.Translate(0, 0.0001)
         }
     }
-    
+    jump_count = 0
+    mux.Unlock()
 }
 
 // update is called every frame (1/60 [s]).
@@ -73,7 +81,7 @@ func update(screen *ebiten.Image) error {
         positionx -= 2
         opts.GeoM.Translate(-2, 0)
     }
-    if inpututil.IsKeyJustPressed(ebiten.KeySpace) && positiony > 0{
+    if inpututil.IsKeyJustPressed(ebiten.KeySpace) && positiony > 0 && jump_count == 0{
         go jump()
     }
     
