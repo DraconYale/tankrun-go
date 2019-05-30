@@ -38,12 +38,6 @@ func (g *Game) in() {
     g.cameraY = 0
 }
 
-//func (g *Game) init(){
-//    g.positionx = 40
-//    g.positiony = 164
-//    g.positionvy16 = 0
-//}
-
 func (g *Game) drawPlayer(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
     h := 16
@@ -65,10 +59,6 @@ var jump_count = 0
 
 //opts is a global variable because it would not update correctly inside the "update" func
 var opts *ebiten.DrawImageOptions = &ebiten.DrawImageOptions{}
-
-//func (g *Game) jump(){
-    
-//}
 
 // update is called every frame (1/60 [s]).
 func (g *Game) update(screen *ebiten.Image) error {
