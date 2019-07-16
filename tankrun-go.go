@@ -48,7 +48,7 @@ func (g *Game) drawPlayer(screen *ebiten.Image) {
 //setting game elements
 var player *ebiten.Image
 var floor *ebiten.Image
-var i float64
+var background *ebiten.Image
 
 
 //variable used to make the jump mutual exclusive
@@ -64,10 +64,12 @@ func (g *Game) update(screen *ebiten.Image) error {
     
 	//only for debugging
 	fmt.Println(g.positionx, g.positiony)
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS()))
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("\nFPS: %0.2f", ebiten.CurrentFPS()))
     
 	var err error
+	background, _, err = ebitenutil.NewImageFromFile("back.png", ebiten.FilterNearest)
+	if err != nil {
+		log.Fatal(err)
+	}
 	//creating floor
 	floor, _, err = ebitenutil.NewImageFromFile("floor.png", ebiten.FilterDefault)
 	if err != nil {
@@ -106,12 +108,14 @@ func (g *Game) update(screen *ebiten.Image) error {
 	}
     
 	//defining floor image options
+	optb := &ebiten.DrawImageOptions{}
 	optf := &ebiten.DrawImageOptions{}
-    
 	optf.GeoM.Translate(0,180)
-    
+	screen.DrawImage(background, optb)
 	screen.DrawImage(floor, optf)
 	g.drawPlayer(screen)
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS()))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("\nFPS: %0.2f", ebiten.CurrentFPS()))
 	return nil
 }
 
